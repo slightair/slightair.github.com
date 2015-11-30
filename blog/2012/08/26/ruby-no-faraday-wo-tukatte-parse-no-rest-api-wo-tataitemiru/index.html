@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Ruby の faraday をつかって Parse の REST API 叩いてみる - セロリ食べたい</title>
+    <meta name="author" content="slightair">
+    <meta name="description" content="">
+    <link href="/stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script src='http://code.jquery.com/jquery.js' type='text/javascript'></script>
+    <script src='/javascripts/main.js' type='text/javascript'></script>
+</head>
+
+<body>
+<div class="container">
+    <div>
+        <article role="article">
+            <header class="page-header">
+                <h1 class="entry-title">Ruby の Faraday をつかって Parse の REST API 叩いてみる</h1>
+
+                <p class="meta">
+                    <time datetime="2012-08-26T18:46:00+09:00" pubdate data-updated="true">Aug 26<span>th</span>, 2012
+                    </time>
+                </p>
+            </header>
+            <div class="entry-content"><p>Parse を使ってなんかゲームやらなんやらを作りたいなあと思っている。
+                とりあえずなんらかのプログラミング言語で Parse にあるデータを更新したり取得したりしたいなあと思ったのだった。
+                Parse には iOS や Android 向けの SDK だけでなく REST の API が用意されているのでこれを使ってみることにした。</p>
+
+                <h2>faraday を使えるようにする</h2>
+
+                <p><a href="https://github.com/technoweenie/faraday">faraday</a> は HTTP クライアントライブラリである。
+                    まず Gemfile を書く。bundler を使ったことがなかったので調べながらすすめた。</p>
+
+<pre><code>source "http://rubygems.org"
+    gem "faraday"
+</code></pre>
+
+                <p>Gemfile を書いたら以下のコマンドで faraday をインストールする</p>
+
+<pre><code>bundle install --path vendor/bundle
+</code></pre>
+
+                <h2>Parse の REST API を叩く</h2>
+
+                <p>Parse の REST API の <a href="https://parse.com/docs/rest">ドキュメント</a> を見て実際に叩いてみる。
+                    以下のようなコードを書いた</p>
+
+                <div>
+                    <script src='https://gist.github.com/3477997.js'></script>
+                    <noscript><pre><code>require &quot;faraday&quot;
+
+                        conn = Faraday::Connection.new(url: 'https://api.parse.com') do |builder|
+                        builder.request :url_encoded
+                        builder.adapter :net_http
+                        end
+
+                        response = conn.get do |request|
+                        request.url '/1/classes/Foo'
+                        request.headers = {
+                        'X-Parse-Application-Id' =&gt; '',
+                        'X-Parse-REST-API-Key' =&gt; '',
+                        }
+                        end
+
+                        puts response.body</code></pre>
+                    </noscript>
+                </div>
+
+
+                <p>自分の環境 (ruby 1.9.3p194 / MacOSX 10.8 Mountain Lion / rbenv) で実行してみると以下のような https 関連のエラーが出てしまった。</p>
+
+<pre><code>Faraday::Error::ConnectionFailed: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B:
+    certificate verify failed
+</code></pre>
+
+                <h2>証明書のダウンロード</h2>
+
+                <p><a href="http://qiita.com/items/d1d26ff7eb4441a392ac">Mountain Lion+rubyでopensslエラー</a>
+                    の記事を参考に、証明書をダウンロードして <code>/usr/local/etc/openssl</code> 下に <code>cert.pem</code> という名前で置いた。
+                    すると以下のような結果が得られた。うまくいったようだ。</p>
+
+<pre><code>{"results":[{"title":"Hello
+    World","createdAt":"2012-08-26T06:19:14.205Z","updatedAt":"2012-08-26T06:19:14.205Z","objectId":"xxxxxxxxxx"}]}
+</code></pre>
+            </div>
+        </article>
+    </div>
+</div>
+</body>
+</html>

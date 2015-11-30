@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Parse を試してみた - セロリ食べたい</title>
+    <meta name="author" content="slightair">
+    <meta name="description" content="">
+    <link href="/stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script src='http://code.jquery.com/jquery.js' type='text/javascript'></script>
+    <script src='/javascripts/main.js' type='text/javascript'></script>
+</head>
+
+<body>
+<div class="container">
+    <div>
+        <article role="article">
+            <header class="page-header">
+                <h1 class="entry-title">Parse を試してみた</h1>
+
+                <p class="meta">
+                    <time datetime="2012-08-17T11:51:00+09:00" pubdate data-updated="true">Aug 17<span>th</span>, 2012
+                    </time>
+                </p>
+            </header>
+            <div class="entry-content">
+                <p><a href="https://parse.com/">Parse</a> という BaaS を試してみた。
+                    BaaS は Backend as a Service らしい。
+                    この記事によくまとめられていたので参考にした。<a href="http://iphone-dev.g.hatena.ne.jp/laiso/20120223/1330007695">モバイルアプリのバックエンド(Web
+                        API)に特化したサービスのまとめ</a></p>
+
+                <h2>Parse とは</h2>
+
+                <p>Parse は BaaS という言葉が示すように、アプリケーションのバックエンドを提供してくれるサービスのようだ。
+                    提供される SDK を通してユーザの認証やユーザごとのデータの取得・保存ができるようになる。
+                    iOSアプリケーションなどのクライアントと、データを提供したり保存したりするサーバアプリケーションを作るとなると大変な手間がかかるけど、このサーバの方の役割を担ってくれるのが Parse らしい。
+                    Parse の他にもこのようなサービスはいくつかあって、サービスによってプッシュ通知やSNS連携、位置情報サービスにも対応しているものがあるようだ。
+                    今回は Parse を試してみようと思う。</p>
+
+                <h2>Parse の Quick Start Guide</h2>
+
+                <p>Parse のサイトにいってユーザ登録し、Quick Start Guide にしたがってすすめてみる。
+                    サイトが親切で、自分がやりたいようにぽちぽち項目を選んでいくとすすんでいく。
+                    iOS, Android, JavaScript と並んでいたので iOS を選択すると、SDK のダウンロードリンクとアプリケーションIDやキーを挿入する位置が表示された。
+                    次のTest the SDK という項目ではコードとそれを追記するところが示されていた。
+                    SDKをダウンロードして、それに含まれるサンプルプロジェクトにコードを記述してアプリケーションを実行すると、データを登録できた。
+                    ページではデータがきちんと登録できたことを確認することができる。</p>
+
+                <p>これではただ Quick Start Guide に従っただけなので、次回はもう少しすすんでおもしろいことができるようにする。</p>
+            </div>
+        </article>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>SimpleHttpClient をつかって Scala で Parse の REST API をたたいてみる - セロリ食べたい</title>
+    <meta name="author" content="slightair">
+    <meta name="description" content="">
+    <link href="/stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <script src='http://code.jquery.com/jquery.js' type='text/javascript'></script>
+    <script src='/javascripts/main.js' type='text/javascript'></script>
+</head>
+<body>
+<div class="container">
+    <div>
+        <article role="article">
+            <header class="page-header">
+                <h1 class="entry-title">SimpleHttpClient をつかって Scala で Parse の REST API をたたいてみる</h1>
+
+                <p class="meta">
+                    <time datetime="2012-09-04T13:31:00+09:00" pubdate data-updated="true">Sep 4<span>th</span>, 2012
+                    </time>
+                </p>
+            </header>
+            <div class="entry-content"><p>前回 Ruby で書いていた Parse の REST API を叩いてみるものを Scala でも書いてみた。
+                API を叩くときには、アプリケーション ID や REST API キーなるものをリクエストヘッダに設定しないといけない。
+                なにか簡単な HTTP クライアントはないものかと探したところ、takezoe さんの <a
+                        href="https://bitbucket.org/takezoe/scala-utils/src/1b236c10f439/src/main/scala/jp/sf/amateras/scala/util/http/SimpleHttpClient.scala">SimpleHttpClient</a>
+                なるものを見つけたので今回はこれを使ってみる。</p>
+
+                <h2>sbt で SimpleHttpClient を使えるようにする</h2>
+
+                <p>Build.scala にプロジェクトのビルド設定を記述する。
+                    依存するライブラリなどを指定する際に、<a href="http://d.hatena.ne.jp/Yoshiori/20120324/1332618170"
+                                          title="sbt で github にあるライブラリを直接使う方法">github においてあるコードを git
+                        で取得してプロジェクトに取り込める</a>ことは知っていた。
+                    今回使いたいのは Mercurial で管理されているコードである。
+                    ちょうど <a href="http://eed3si9n.com/ja/sbt-0120-changes" title="sbt 0.12.0 の変更点">sbt 0.12.0 から
+                        Mercurial にも対応した</a>ようなので、これを使ってみる。
+                    コードの取得元URIの頭に <code>hg:</code> をつければよいらしい。
+                    こんなかんじに書いてみた</p>
+
+<pre><code>lazy val root = Project(
+    ...
+    ).dependsOn(takezoe_utils)
+    lazy val takezoe_utils = uri("hg:https://bitbucket.org/takezoe/scala-utils")
+</code></pre>
+
+                <p>これで自分のプロジェクトに takezoe さんの scala-utils のコードを取り込んで使うことができるようになった。</p>
+
+                <h2>SimpleHttpClient を使う</h2>
+
+                <p>あとは SimpleHttpClient に叩きたい API の URL やらヘッダやらを設定してあげればOKなはず。
+                    以下のようなコードを書いた。
+                    ParseConfig クラスにはアプリケーション ID や REST API のキーがはいっているものと思ってほしい。</p>
+
+<pre><code> package cc.clv.parse
+
+    import cc.clv.parse.config._
+    import jp.sf.amateras.scala.util.Imports._
+    import jp.sf.amateras.scala.util.http.SimpleHttpClient
+
+    class Parse(val config: ParseConfig) {
+    val parseAPIRoot = "https://api.parse.com"
+    val requestHeaders = Map(
+    "X-Parse-Application-Id" -&gt; config.appId,
+    "X-Parse-REST-API-Key" -&gt; config.restAPIKey,
+    "Content-Type" -&gt; "application/json"
+    )
+
+    def getObjects(name: String) = {
+    using (new SimpleHttpClient){ client =&gt;
+    val content: Option[String] = client.get(
+    url = parseAPIRoot + "/1/classes/" + name,
+    headers = requestHeaders
+    )
+    content match {
+    case Some(s) =&gt; s
+    case None =&gt; None
+    }
+    }
+    }
+    }
+</code></pre>
+
+                <p><code>parse.getObjects("Player")</code> とかすれば Player クラスのデータが取得できる。
+                    とりあえず JSON を取ってきているだけなので、このあとあれこれしよう。</p>
+
+                <p>プロジェクト全体は<a href="https://github.com/slightair/scala-parse">こちら</a>にあります。</p>
+            </div>
+        </article>
+    </div>
+</div>
+</body>
+</html>
